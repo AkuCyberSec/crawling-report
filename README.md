@@ -86,7 +86,7 @@ change
 
 to
 -v "/home/kali/report/input/":"/app/in"
--v "/home/kali/report/output/":"/app/in"
+-v "/home/kali/report/output/":"/app/out"
 ```
 
 2. Edit the **config.yaml** to add, remove or modify rules.  
@@ -96,3 +96,11 @@ to
 
 HTML reports can be exported in TXT and CSV formats.  
 **Exported files will contain only visible rows.**  
+
+## TODO
+- Add the possibility to display all the values extracted by the extractors.  
+Example:  
+**URL**: https://evil-site.com/login.php?user=guest&password=Passw0rd!&passwd=Passw2!  
+**Extractor expression**: (passw|pwd|password|passwd)=([^&]+)  
+**Current behavior**: the value **Passw0rd!** is extracted but **Passw2!** is ignored.  
+**Desired behavior**: all the values must be extracted.  
