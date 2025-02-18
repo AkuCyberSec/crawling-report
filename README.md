@@ -4,8 +4,8 @@ Create an interactive HTML report from a list of URLs to help identifying intere
 Run: **run.py \<arg\>**  
 **Arguments:**
 - get-config: Create a copy of config.yaml in **/app/out**
-- create-report: Generate the HTML report in **/app/out**
-
+- create-report: Generate the HTML report in **/app/out**. Use cached results (if they exist).
+- create-report-no-cache: Generate the HTML report in **/app/out**. Ignore cached results.
 If no argument is specified, it prints out the help.
 
 ## How To (Dockerized version)
@@ -21,7 +21,7 @@ After processing, the tool will produce an HTML report in the output folder **/a
 Files are in the template folder: **/app/template**.  
 It's possible to edit HTML, JS and CSS files without rebuilding, by adding a volume that points to /app/template.
 
-## Config.yaml
+# Configuration (config.yaml)
 The configuration file must have the following structure:
 ```yaml
 rules:
@@ -47,7 +47,7 @@ The structure of an extractor is the following:
 
 A group in a regular expression is defined by using parentheses.
 
-### Config Example
+## Config Example
 Let's say we have the following URLs:
 ```
 matcher: [\\?|&](passw|pwd|password|passwd|username|user|usr|login|loginid)=[^&]
@@ -73,6 +73,18 @@ We can specify the group **0** if we want our report to display both the paramet
 
 ![alt text](example.png)
 
+# Caches
+Caches will be saved in the output folder, under a subfolder named **cache**.  
+Caches are divided by rules: each rule is saved to a file named **RuleName.cache**.  
+
+After processing a matcher for a specified rule, cache are saved in JSON format.  
+If a matcher is already processed, it will be skipped.
+
+Changing **extractors** will **NOT** affect caches, so it's possible to add, remove or modify extractors and generate a new report without processing files again. 
+
+Use the argument **create-report** if you want to use the caches.  
+Use the argument **create-report-no-cache** if you want to ignore the caches.  
+
 # Example
 On our host we have two folders:
 - **/home/kali/report/input** as our input folder
@@ -97,10 +109,13 @@ to
 HTML reports can be exported in TXT and CSV formats.  
 **Exported files will contain only visible rows.**  
 
-## TODO
+# TODO
+
+# Task completed
 - [x] Add the possibility to display all the values extracted by the extractors.  
 Example:  
 **URL**: https://evil-site.com/login.php?user=guest&password=Passw0rd!&passwd=Passw2!  
 **Extractor expression**: (passw|pwd|password|passwd)=([^&]+)  
 **Current behavior**: the value **Passw0rd!** is extracted but **Passw2!** is ignored.  
 **Desired behavior**: all the values must be extracted.  
+- [x] Implement caching
