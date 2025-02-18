@@ -1,0 +1,20 @@
+<div class="panel">
+    <div class="toggle-btn" onclick="toggle('@@RULE_NAME', this)">
+        <div>
+            <input type="checkbox" id="@@RULE_NAMECheck" data-rule-name="@@RULE_NAME" class="select-rule" checked>
+            <label for="@@RULE_NAMECheck">@@RULE_NAME</label>
+        </div>
+        <select class="dropdown-menu" onchange="applyExtractor(this, '@@RULE_NAME')">
+            <option value="0" selected>🔍 Extractors</option>
+            <option value="1">All extracted values separated by semicolon</option>
+            @@EXTRACTORS
+        </select>
+
+    </div>
+    <div id="@@RULE_NAME" class="p-2">
+        <table class="w-full text-left">
+            <tr><th>URL</th><th>Actions</th><th>Values</th></tr>
+            @@ROWS
+        </table>
+    </div>
+</div>

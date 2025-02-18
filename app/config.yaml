@@ -1,0 +1,52 @@
+rules:
+  - name: "Credentials"
+    matchers:
+      # Users and passwords
+      - "[\\?|&](passw|pwd|password|passwd|username|user|usr|login|loginid)=[^&]"
+      # Emails
+      - "[\\?|&](email|mail)=([^&]+[@|%40]{1}[^&]+\\.[^&]+)"
+      # JWTs
+      - "[\\?|&](jwt|apiKey|api|key|token|access_token|refresh_token)=(eyJhbGciOiJ){1}[a-z0-9\\-_\\+/=%]+\\.(eyJ){1}[a-z0-9\\-_\\+/=%]+\\.[a-z0-9\\-_\\+/=%]+"
+      # Sessions
+      - "[\\?|&](phpsessid|jsessionid|asp\\.net_sessionid|_session_id|sessionid|connect\\.sid|laravel_session|cfid)=[^&]+"
+    extractors:
+      - name: "Password"
+        group: 2
+        expression: "(passw|pwd|password|passwd)=([^&]+)"
+      - name: "User"
+        group: 2
+        expression: "(username|user|usr|login|loginid)=([^&]+)"
+      - name: "Email"
+        group: 2
+        expression: "(email|mail)=([^&]+[@|%40]{1}[^&]+\\.[^&]+)"
+      - name: "JWT Token"
+        group: 2
+        expression: "(jwt|apiKey|api|key|token|access_token|refresh_token)=((eyJhbGciOiJ){1}[a-z0-9\\-_\\+/=%]+\\.(eyJ){1}[a-z0-9\\-_\\+/=%]+\\.[a-z0-9\\-_\\+/=%]+)"
+      - name: "Sessions"
+        group: 2
+        expression: "(phpsessid|jsessionid|asp\\.net_sessionid|_session_id|sessionid|connect\\.sid|laravel_session|cfid)=([^&]+)"
+  - name: "Files"
+    matchers:
+      - "/((access_log|error_log|l0g|log|logs|access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log|\\.zip))"
+      - "/(web\\.config|phpinfo\\.php|\\.htaccess)"
+    extractors:
+      - name: "Logs"
+        group: 1
+        expression: "((access_log|error_log|l0g|log|logs)(\\.txt|\\.log|\\.zip))"
+      - name: "Authentication"
+        group: 1
+        expression: "((access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log|\\.zip))"
+      - name: "Configurations"
+        group: 1
+        expression: "(web\\.config|phpinfo\\.php|\\.htaccess)"
+  - name: "APIs"
+    matchers:
+        - "/([^\\?|&|/]\\.wadl)"
+        - "/((swagger|swagger-ui)\\.(html|yaml|json|js))"
+    extractors:
+      - name: "WADL Files"
+        group: 1
+        expression: "/([^\\?|&|/]\\.wadl)"
+      - name: "Swagger"
+        group: 1
+        expression: "/((swagger|swagger-ui)\\.(html|yaml|json|js))"

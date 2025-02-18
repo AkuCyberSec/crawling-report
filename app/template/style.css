@@ -1,0 +1,74 @@
+:root {
+    --bg-color: #f0f0f0;
+    --text-color: #333;
+    --panel-bg: #ffffff;
+    --border-color: #ccc;
+    --button-bg: #ffffff;
+}
+.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #e0e0e0;
+    --panel-bg: #2e2e2e;
+    --border-color: #555;
+    --button-bg: #333;
+}
+body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.macos-menu {
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+}
+.menu-options {
+    display: flex;
+    gap: 10px;
+}
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    margin-top: 15px;
+}
+.toggle-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+}
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: 5px;
+}
+.save-urls, .hide-or-display-urls {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: 5px;
+}
+.url-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.macos-buttons button {
+    background: var(--button-bg);
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    border-radius: 5px;
+}

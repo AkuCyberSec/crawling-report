@@ -1,0 +1,7 @@
+*.log
+.DS_Store
+.DS_Store?
+._*
+venv/*
+sample_input/*
+sample_output/*
