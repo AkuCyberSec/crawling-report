@@ -98,7 +98,7 @@ HTML reports can be exported in TXT and CSV formats.
 **Exported files will contain only visible rows.**  
 
 ## TODO
-- Add the possibility to display all the values extracted by the extractors.  
+- [x] Add the possibility to display all the values extracted by the extractors.  
 Example:  
 **URL**: https://evil-site.com/login.php?user=guest&password=Passw0rd!&passwd=Passw2!  
 **Extractor expression**: (passw|pwd|password|passwd)=([^&]+)  

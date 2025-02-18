@@ -30,12 +30,22 @@ function applyExtractor(select, tableId) {
             {
                 let expression = option.dataset.expression;
                 let group = parseInt(option.dataset.group);
-                let regex = new RegExp(expression,"i");
+                let regex = new RegExp(expression,"ig");
                 let url = cell.parentNode.children[0].textContent;
                 let match = url.match(regex);
                 if (match == null)
                     continue;
-                values.push(decodeURIComponent(match[group]));
+
+                regex = new RegExp(expression, "i");
+                for (let j = 0; j < match.length; j++)
+                {
+                    let extracted_value = match[j];
+                    let extracted_value_match = extracted_value.match(regex);
+                    if (extracted_value_match == null)
+                        continue;
+                    values.push(decodeURIComponent(extracted_value_match[group]));
+                }
+                
             }
         }
         cell.textContent = values.join(";");
