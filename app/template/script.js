@@ -43,7 +43,21 @@ function applyExtractor(select, tableId) {
                     let extracted_value_match = extracted_value.match(regex);
                     if (extracted_value_match == null)
                         continue;
-                    values.push(decodeURIComponent(extracted_value_match[group]));
+                    let value_to_display = extracted_value_match[group];
+                    try
+                    {
+                        // If the URI Component is malformed, it throws an exception
+                        values.push(decodeURIComponent(value_to_display));
+                    }
+                    catch(error)
+                    {
+                        values.push(value_to_display);
+                        console.log("Error: " + error);
+                        console.log("URL: " + url);
+                        console.log("Extracted value: " + extracted_value)
+                        console.log("Value to push: " + value_to_display);
+                    }
+                    
                 }
                 
             }
