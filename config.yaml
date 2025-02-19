@@ -1,5 +1,7 @@
+max_rows_per_report: 2
 rules:
   - name: "Credentials"
+    enabled: true
     matchers:
       # Users and passwords
       - "[\\?|&](passw|pwd|password|passwd|username|user|usr|login|loginid)=[^&]"
@@ -26,6 +28,7 @@ rules:
         group: 2
         expression: "(phpsessid|jsessionid|asp\\.net_sessionid|_session_id|sessionid|connect\\.sid|laravel_session|cfid)=([^&]+)"
   - name: "Files"
+    enabled: true
     matchers:
       - "/((access_log|error_log|l0g|log|logs|access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log|\\.zip))"
       - "/(web\\.config|phpinfo\\.php|\\.htaccess)"
@@ -40,6 +43,7 @@ rules:
         group: 1
         expression: "(web\\.config|phpinfo\\.php|\\.htaccess)"
   - name: "APIs"
+    enabled: true
     matchers:
         - "/([^\\?|&|/]\\.wadl)"
         - "/((swagger|swagger-ui)\\.(html|yaml|json|js))"

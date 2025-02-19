@@ -54,7 +54,7 @@ body {
     padding: 4px;
     border-radius: 5px;
 }
-.save-urls, .hide-or-display-urls {
+.save-urls, .hide-or-display-urls, .pages {
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
     padding: 4px;

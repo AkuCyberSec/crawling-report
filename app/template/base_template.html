@@ -10,6 +10,9 @@
 <body class="p-4">
     <div class="macos-menu">
         <div class="macos-buttons">
+            <select class="pages" onchange="changePage(this);">
+                @@PAGES
+            </select>
             <select class="save-urls" onchange="saveUrls(this)">
                 <option selected value="0">💾 Export rules and values</optgroup>
                 <option value="all_with_values">Export all rules with values (CSV)</option>

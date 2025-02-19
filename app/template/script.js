@@ -1,6 +1,6 @@
-function toggle(id, element) {
-    let div = document.getElementById(id);
-    // div.classList.toggle("hidden");
+function changePage(select)
+{
+    window.location.href = select.value;
 }
 
 function applyExtractor(select, tableId) {
