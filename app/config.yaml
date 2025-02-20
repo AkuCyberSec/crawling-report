@@ -1,4 +1,4 @@
-max_rows_per_report: 5
+max_rows_per_report: 500
 rules:
   - name: "Credentials"
     enabled: true
@@ -30,18 +30,26 @@ rules:
   - name: "Files"
     enabled: true
     matchers:
-      - "/((access_log|error_log|l0g|log|logs|access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log|\\.zip))"
-      - "/(web\\.config|phpinfo\\.php|\\.htaccess)"
+      # ([\\?&](.+=.+)*)*$
+      - "/((access_log|error_log|l0g|log|logs|access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log))([\\?&](.+=.+)*)*$"
+      - "/(web\\.config|phpinfo\\.php|\\.htaccess|\\.git|\\.git\\-ignore)([\\?&](.+=.+)*)*$"
+      - "([^/=]+\\.(zip|rar|7z|tar\\.gz))([\\?&](.+=.+)*)*$"
     extractors:
       - name: "Logs"
         group: 1
-        expression: "((access_log|error_log|l0g|log|logs)(\\.txt|\\.log|\\.zip))"
+        expression: "((access_log|error_log|l0g|log|logs)(\\.txt|\\.log|\\.zip))([\\?&](.+=.+)*)*$"
       - name: "Authentication"
         group: 1
-        expression: "((access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log|\\.zip))"
+        expression: "((access|accesses|credentials|sessions|session|user|users|email)(\\.txt|\\.log))([\\?&](.+=.+)*)*$"
       - name: "Configurations"
         group: 1
-        expression: "(web\\.config|phpinfo\\.php|\\.htaccess)"
+        expression: "/(web\\.config|phpinfo\\.php|\\.htaccess)([\\?&](.+=.+)*)*$"
+      - name: "Archives"
+        group: 1
+        expression: "([^/=]+\\.(zip|rar|7z|tar\\.gz))([\\?&](.+=.+)*)*$"
+      - name: "Git"
+        group: 1
+        expression: "/(\\.git|\\.git\\-ignore)([\\?&](.+=.+)*)*$"
   - name: "APIs"
     enabled: true
     matchers:

@@ -84,13 +84,18 @@ class Rule:
         self.name = name
         self.matchers = matchers
         self.extractors = extractors
-        self.cache = CachedRule(name)
-        self.rows = self.cache.extracted_urls
+        if not is_enabled:
+            logger.info(f"Caches won't be loaded for rule {name} because is not enabled.")
+            self.cache = None
+            self.rows = []
+        else:
+            self.cache = CachedRule(name)
+            self.rows = self.cache.extracted_urls
         self.is_enabled = is_enabled
 
     def match_results(self, input_directory:str):
         if not self.is_enabled:
-            logger.info(f"Rule {self.is_enabled} is not enabled. Extraction will be skipped.")
+            logger.info(f"Rule {self.name} is not enabled. Extraction will be skipped.")
             return
         
         logger.info(f"Extraction started for rule \"{self.name}\"")
@@ -120,9 +125,6 @@ class Rule:
             counter += 1
 
         return "\n".join(extractors)
-
-class Report:
-    rows:list[str]
 
 class CrawlingReport:
 
@@ -198,7 +200,7 @@ class CrawlingReport:
             if not rule.is_enabled:
                 logger.info(f"Skipping rule {rule.name} because is not enabled")
                 continue
-            
+
             logger.info(f"Exporting rows for rule {rule.name}")
             logger.debug(f"Number of rows for rule: {len(rule.rows)}")
 
