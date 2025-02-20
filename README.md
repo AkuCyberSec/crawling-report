@@ -24,8 +24,10 @@ It's possible to edit HTML, JS and CSS files without rebuilding, by adding a vol
 # Configuration (config.yaml)
 The configuration file must have the following structure:
 ```yaml
+max_rows_per_report: 500
 rules:
   - name: "Credentials"
+    enabled: true
     matchers:
       # Users and passwords
       - "[\\?|&](passw|pwd|password|passwd|username|user|usr|login|loginid)=[^&]"
@@ -35,8 +37,14 @@ rules:
         expression: "(passw|pwd|password|passwd)=([^&]+)"
 ```
 
+The first key is **max_rows_per_report**.  
+This key defines the max number of rows per each report.  
+When a report reaches the maximum number of pages, a new report is created.  
+On the top-left corner of the page, a dropdown menu allows to change "page" (or report).  
+
 Under **rules** we have:
 - **name**: The name of the rule
+- **enabled**: A boolean that defines whether the rules is enabled or not. If the rules is NOT enabled, it will be ignored and won't be added to the report.
 - **matchers**: A list of regular expressions used with the **grep** command (grep -iE '\<regexp\>') for extracting URLs from lists that match the regular expressions.
 - **extractors**: A list of extractors that define regular expressions in **JavaScript**, in the HTML report. The extractors are used for extracting values from single URLs.  
 
@@ -77,13 +85,23 @@ We can specify the group **0** if we want our report to display both the paramet
 Caches will be saved in the output folder, under a subfolder named **cache**.  
 Caches are divided by rules: each rule is saved to a file named **RuleName.cache**.  
 
-After processing a matcher for a specified rule, cache are saved in JSON format.  
+After processing a matcher for a specified rule, caches are saved in JSON format.  
 If a matcher is already processed, it will be skipped.
 
 Changing **extractors** will **NOT** affect caches, so it's possible to add, remove or modify extractors and generate a new report without processing files again. 
 
 Use the argument **create-report** if you want to use the caches.  
 Use the argument **create-report-no-cache** if you want to ignore the caches.  
+
+# Paging
+When the maximum number of rows per report is reached, new reports are created.  
+The first report will be named "report_DATETIME_0.html", the second "report_DATETIME_1.html" and so on. 
+Based on how many reports are going to be generated, the last part of the filename will change the format.  
+- <= 9 reports generated: report_DATETIME_x.html (e.g., 0, 1, 2...)
+- \>= 10 and <= 99 reports: report_DATETIME_xx.html (e.g., 01, 02, 10, 11, 99...)
+and so on.
+
+Each file represents a single page that can be changed by selecting it on the top-left dropdown menu.
 
 # Example
 On our host we have two folders:
@@ -119,3 +137,5 @@ Example:
 **Current behavior**: the value **Passw0rd!** is extracted but **Passw2!** is ignored.  
 **Desired behavior**: all the values must be extracted.  
 - [x] Implement caching
+- [x] Implement paging
+- [x] Implement enable/disable rule
