@@ -183,7 +183,7 @@ function applyURLsFilters()
         let url = row.getElementsByClassName("url-cell")[0].title;
         let value = cell.innerHTML.trim();
         let isCellEmpty = value.length == 0;
-        let rowCanBeDisplayed = !isCellEmpty || isCellEmpty && !hideUrlsWithoutExtractedValues;
+        let rowCanBeDisplayed = false;
         
         if (filterByUrl)
             rowCanBeDisplayed = url.includes(filterValue);
@@ -195,6 +195,9 @@ function applyURLsFilters()
             rowCanBeDisplayed = hostname == selectedFilter;
         }
         
+        if (isCellEmpty && hideUrlsWithoutExtractedValues)
+            rowCanBeDisplayed = false;
+
         if (rowCanBeDisplayed)
             row.classList.remove("hidden");
         else
