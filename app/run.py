@@ -207,7 +207,11 @@ class CrawlingReport:
             if not rule.is_enabled:
                 logger.info(f"Skipping rule {rule.name} because is not enabled")
                 continue
-
+            
+            if len(rule.rows) == 0:
+                logger.info(f"Skipping rule {rule.name} because it contains no rows")
+                continue
+            
             logger.info(f"Exporting rows for rule {rule.name}")
             logger.debug(f"Number of rows for rule: {len(rule.rows)}")
 
