@@ -183,7 +183,7 @@ function applyURLsFilters()
         let url = row.getElementsByClassName("url-cell")[0].title;
         let value = cell.innerHTML.trim();
         let isCellEmpty = value.length == 0;
-        let rowCanBeDisplayed = false;
+        let rowCanBeDisplayed = displayAllHostnames;
         
         if (filterByUrl)
             rowCanBeDisplayed = url.includes(filterValue);
