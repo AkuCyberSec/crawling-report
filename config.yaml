@@ -1,4 +1,5 @@
 max_rows_per_report: 500
+hide_rows_automatically: false
 rules:
   - name: "Credentials"
     enabled: true

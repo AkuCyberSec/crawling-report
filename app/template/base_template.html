@@ -13,17 +13,20 @@
             <select class="pages" onchange="changePage(this);">
                 @@PAGES
             </select>
-            <select class="save-urls" onchange="saveUrls(this)">
+            <select id="save-urls" onchange="saveUrls(this)">
                 <option selected value="0">💾 Export rules and values</optgroup>
                 <option value="all_with_values">Export all rules with values (CSV)</option>
                 <option value="all_no_values">Export all rules without values (TXT)</option>
                 <option value="selected_with_values">Export selected rules with values (CSV)</option>
                 <option value="selected_no_values">Export selected rules without values (TXT)</option>
             </select>
-            <select class="hide-or-display-urls" onchange="toggleEmptyURLs(this)">
-                <option selected value="0">🔍 Filter extractor values</optgroup>
-                <option value="display">Display rows with empty values</option>
-                <option value="hide">Hide rows with empty values</option>
+            <select id="hide-or-display-urls" onchange="toggleEmptyURLs(this)">
+                <option @@SELECTED_DISPLAY_ROWS value="display">🔍 Display rows with empty values</option>
+                <option @@SELECTED_HIDE_ROWS value="hide">🔍 Hide rows with empty values</option>
+            </select>
+            <select id="display-selected-hostname" onchange="displaySelectedHostname(this)">
+                <option selected value="*">🔍 Display all hostnames</option>
+                @@HOSTNAMES
             </select>
         </div>
         <button onclick="toggleTheme()" id="themeButton">🌙</button>
@@ -35,6 +38,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js"></script>   
 </body>
 </html>

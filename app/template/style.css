@@ -54,7 +54,7 @@ body {
     padding: 4px;
     border-radius: 5px;
 }
-.save-urls, .hide-or-display-urls, .pages {
+#save-urls, #hide-or-display-urls, #display-selected-hostname, .pages {
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
     padding: 4px;
@@ -71,4 +71,10 @@ body {
     border: 1px solid var(--border-color);
     padding: 4px 8px;
     border-radius: 5px;
+}
+.row{
+    display: table-row;
+}
+.row .hidden{
+    display: table-row;
 }

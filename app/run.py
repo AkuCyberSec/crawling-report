@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import yaml, logging, os, sys, shutil, json, math
 from datetime import datetime
+from urllib.parse import urlparse
 
 INPUT_DIRECTORY = "in"
 OUTPUT_DIRECTORY = "out"
@@ -130,6 +131,9 @@ class CrawlingReport:
 
     # YAML Keys
     OBJECT_NAME_KEY = "name"
+    RULES_KEY = "rules"
+    MAX_ROWS_PER_REPORT_KEY = "max_rows_per_report"
+    HIDE_ROWS_AUTOMATICALLY_KEY = "hide_rows_automatically"
     RULE_MATCHERS_KEY = "matchers"
     RULE_OUTPUT_FILENAME_KEY = "output_filename"
     RULE_EXTRACTORS_KEY = "extractors"
@@ -143,13 +147,15 @@ class CrawlingReport:
     # Variables
     rules:list[Rule] = []
     max_rows_per_report:int = 1
+    hide_rows_automatically:bool = False
 
     def __init__(self, config_file:str):
         logger.info(f"Reading configuration file: {config_file}")
         with open(config_file) as yaml_file_stream:
             yaml_file = yaml.load(yaml_file_stream, yaml.FullLoader)
-            self.max_rows_per_report = yaml_file["max_rows_per_report"]
-            yaml_rules = yaml_file["rules"]
+            self.max_rows_per_report = yaml_file[CrawlingReport.MAX_ROWS_PER_REPORT_KEY]
+            self.hide_rows_automatically = yaml_file[CrawlingReport.HIDE_ROWS_AUTOMATICALLY_KEY]
+            yaml_rules = yaml_file[CrawlingReport.RULES_KEY]
 
             for yaml_rule in yaml_rules:
                 rule_name = yaml_rule[CrawlingReport.OBJECT_NAME_KEY]
@@ -187,6 +193,7 @@ class CrawlingReport:
         report_counter:int = 0
         panels:list[str] = []
         rows:list[str] = []
+        hostnames:list[str] = []
 
         expected_number_of_reports_to_be_generated:int = math.ceil(total_number_of_rows / self.max_rows_per_report)
         expected_number_of_rows_for_last_report:int = total_number_of_rows % self.max_rows_per_report
@@ -205,15 +212,21 @@ class CrawlingReport:
             logger.debug(f"Number of rows for rule: {len(rule.rows)}")
 
             extractors:str = rule.get_all_extractors_for_html_report(extractor_template)
-
-            for row in rule.rows:
-                rows.append(row_template.replace("@@FULL_URL", row.strip()))
+            row_hidden:str = "hidden" if self.hide_rows_automatically else ""
+            for row in sorted(set(rule.rows)):
+                hostname:str = urlparse(row.strip()).netloc
+                if hostname:
+                    # split(":")[0] -> remove port from hostname
+                    hostnames.append(hostname.split(":")[0])
+                rows.append(row_template\
+                            .replace("@@FULL_URL", row.strip())\
+                            .replace("@@ROW_HIDDEN", row_hidden))
+                
                 report_row_counter += 1
                 total_row_counter += 1
                 if report_row_counter == self.max_rows_per_report:
                     # Close the panel and create the report
                     # Create the report because the max num. of rows has been reached
-                    
                     logger.debug(f"Report #{report_counter}: Close the panel and create the report. Max num rows per report ({self.max_rows_per_report}) has been reached. Row counter: {report_row_counter}")
                     panels.append(panel_template \
                         .replace("@@RULE_NAME", rule.name) \
@@ -221,10 +234,12 @@ class CrawlingReport:
                         .replace("@@ROWS", "\n".join(rows)))
                     self.__save_report(output_directory, panels, \
                                         self.__get_report_name(report_base_filename, report_counter, expected_number_of_reports_to_be_generated), \
-                                        self.__get_report_pages(report_base_filename, expected_number_of_reports_to_be_generated, report_counter))
+                                        self.__get_report_pages(report_base_filename, expected_number_of_reports_to_be_generated, report_counter), \
+                                        hostnames)
                     report_row_counter = 0
                     panels = []
                     rows = []
+                    hostnames = []
                     report_counter += 1
                     pass
             
@@ -242,7 +257,8 @@ class CrawlingReport:
             logger.debug(f"Report #{report_counter}: Create the report because there are rows left for the report. Row counter: {report_row_counter}")
             self.__save_report(output_directory, panels, \
                                 self.__get_report_name(report_base_filename, report_counter, expected_number_of_reports_to_be_generated), \
-                                self.__get_report_pages(report_base_filename, expected_number_of_reports_to_be_generated, report_counter))
+                                self.__get_report_pages(report_base_filename, expected_number_of_reports_to_be_generated, report_counter), \
+                                hostnames)
 
         logger.debug(f"Total row counter: {total_row_counter} | Total number of rows: {total_number_of_rows}")
 
@@ -262,14 +278,25 @@ class CrawlingReport:
                         .replace("@@REPORT_NUMBER", str(i)))
         return pages
 
-    def __save_report(self, output_directory:str, panels:list[str], report_filename:str, pages:list[str]):
+    def __save_report(self, output_directory:str, panels:list[str], report_filename:str, pages:list[str], hostnames:list[str]):
         if not panels:
             return
         
+        selected_display_rows:str = "" if self.hide_rows_automatically else "selected"
+        selected_hide_rows:str = "selected" if self.hide_rows_automatically else ""
+
+        hostname_select_template:str = self.__load_hostname_select_template()
+        hostnames = sorted(set(hostnames))
+        for i in range(0, len(hostnames)):
+            hostnames[i] = hostname_select_template.replace("@@HOSTNAME", hostnames[i])
+
         base_template:str = self.__load_base_template()
         output:str = base_template \
             .replace("@@PANELS", "\n".join(panels)) \
-            .replace("@@PAGES", "\n".join(pages))
+            .replace("@@PAGES", "\n".join(pages)) \
+            .replace("@@SELECTED_DISPLAY_ROWS", selected_display_rows) \
+            .replace("@@SELECTED_HIDE_ROWS", selected_hide_rows) \
+            .replace("@@HOSTNAMES", "\n".join(hostnames))
 
         logger.info(f"Saving report {report_filename}")
         with open(f'{output_directory}/{report_filename}', "w") as output_file:
@@ -295,6 +322,9 @@ class CrawlingReport:
     def __load_page_template(self) -> str:
         with open(f"{CrawlingReport.TEMPLATE_DIRECTORY}/page_template.html", "r") as page_template:
             return page_template.read()
+    def __load_hostname_select_template(self) -> str:
+        with open(f"{CrawlingReport.TEMPLATE_DIRECTORY}/hostname_select_template.html", "r") as hostname_select_template:
+            return hostname_select_template.read()
     # endregion
 
 def print_help():

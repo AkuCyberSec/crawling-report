@@ -1,3 +1,8 @@
+function displaySelectedHostname(select)
+{
+    applyEmptyURLsRule();
+}
+
 function changePage(select)
 {
     window.location.href = select.value;
@@ -157,9 +162,6 @@ function toggleEmptyURLs(e) {
 
     switch(e.value)
     {
-        case "0":
-            e.options.selectedIndex = hideUrlsWithoutExtractedValues ? 2 : 1;
-            break;
         case "display":
             hideUrlsWithoutExtractedValues = false;
             applyEmptyURLsRule();
@@ -174,10 +176,46 @@ function toggleEmptyURLs(e) {
 
 function applyEmptyURLsRule()
 {
+    let selectedHostname = document.getElementById("display-selected-hostname").value;
+
     document.querySelectorAll(".value").forEach(cell => {
         let row = cell.parentNode;
         let isCellEmpty = cell.innerHTML.trim().length == 0;
-        row.style.display = isCellEmpty && hideUrlsWithoutExtractedValues ? "none" : "table-row";
+        let url = row.getElementsByClassName("url-cell")[0].title;
+        let parsedUrl = URL.parse(url)?.host;
+        let urlCanBeShown = selectedHostname == "*" || parsedUrl == selectedHostname;
+
+        if (!urlCanBeShown)
+        {
+            row.classList.add("hidden");
+            return;
+        }
+
+        if (hideUrlsWithoutExtractedValues)
+        {
+            if (isCellEmpty)
+                row.classList.add("hidden");
+            else
+                row.classList.remove("hidden");
+        }
+        else
+            row.classList.remove("hidden");
     });
 }
-toggleTheme();
+
+window.onload = function(){
+    toggleTheme();
+    let hideOrDisplayUrlsValue = document.getElementById("hide-or-display-urls").value;
+    switch(hideOrDisplayUrlsValue)
+    {
+        // hideUrlsWithoutExtractedValues is set to "False" by default
+        // but users can use config.yaml to hide rows automatically.
+        // In that case, we need to know which option is selected 
+        case "hide":
+            hideUrlsWithoutExtractedValues = true;
+            break;
+        case "display":
+            hideUrlsWithoutExtractedValues = false;
+            break;
+    }
+}
