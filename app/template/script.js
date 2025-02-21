@@ -112,8 +112,8 @@ function saveUrls(select) {
         if (saveAll || checkbox.checked){
             document.querySelectorAll(`#${ruleName} .url-cell`).forEach(cell => {
                 let row = cell.parentNode;
-            
-                if (row.style.display != "none")
+                
+                if (!row.classList.contains("hidden"))
                 {
                     if (saveWithValues)
                     {
