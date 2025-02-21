@@ -128,7 +128,6 @@ HTML reports can be exported in TXT and CSV formats.
 **Exported files will contain only visible rows.**  
 
 # TODO
-- [ ] Implement a search bar in the report
 
 # Task completed
 - [x] Add the possibility to display all the values extracted by the extractors.  
@@ -142,3 +141,4 @@ Example:
 - [x] Implement enable/disable rule
 - [x] Implement a function to allow users choosing domain name to show and to hide
 - [x] Allow a user to choose if rows without values are shown or hidden by default (via config file)
+- [x] Implement a search bar in the report

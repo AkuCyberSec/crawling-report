@@ -24,10 +24,13 @@
                 <option @@SELECTED_DISPLAY_ROWS value="display">🔍 Display rows with empty values</option>
                 <option @@SELECTED_HIDE_ROWS value="hide">🔍 Hide rows with empty values</option>
             </select>
-            <select id="display-selected-hostname" onchange="displaySelectedHostname(this)">
+            <select id="display-selected-hostname" onchange="applyURLsFilters()">
                 <option selected value="*">🔍 Display all hostnames</option>
+                <option value="*custom_url*">🔍 Filter by URL -></option>
+                <option value="*custom_value*">🔍 Filter by Value -></option>
                 @@HOSTNAMES
             </select>
+            <input type="text" onkeyup="applyURLsFilters();" id="custom-hostname-value" placeholder="Filter by hostname/value">
         </div>
         <button onclick="toggleTheme()" id="themeButton">🌙</button>
     </div>

@@ -54,11 +54,14 @@ body {
     padding: 4px;
     border-radius: 5px;
 }
-#save-urls, #hide-or-display-urls, #display-selected-hostname, .pages {
+#save-urls, #hide-or-display-urls, #display-selected-hostname, #custom-hostname-value, .pages {
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
     padding: 4px;
     border-radius: 5px;
+}
+#custom-hostname-value{
+    height:32px;
 }
 .url-cell {
     max-width: 200px;

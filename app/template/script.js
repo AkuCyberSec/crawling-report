@@ -1,8 +1,3 @@
-function displaySelectedHostname(select)
-{
-    applyEmptyURLsRule();
-}
-
 function changePage(select)
 {
     window.location.href = select.value;
@@ -70,7 +65,7 @@ function applyExtractor(select, tableId) {
         cell.textContent = values.join(";");
     });
 
-    applyEmptyURLsRule();
+    applyURLsFilters();
 }
 
 function saveUrls(select) {
@@ -164,42 +159,46 @@ function toggleEmptyURLs(e) {
     {
         case "display":
             hideUrlsWithoutExtractedValues = false;
-            applyEmptyURLsRule();
+            applyURLsFilters();
             break;
         case "hide":
             hideUrlsWithoutExtractedValues = true;
-            applyEmptyURLsRule();
+            applyURLsFilters();
             break;
     }
 
 }
 
-function applyEmptyURLsRule()
+function applyURLsFilters()
 {
-    let selectedHostname = document.getElementById("display-selected-hostname").value;
+    let selectedFilter = document.getElementById("display-selected-hostname").value;
+    let displayAllHostnames = selectedFilter == "*";
+    let filterByUrl = selectedFilter == "*custom_url*";
+    let filterByValue = selectedFilter == "*custom_value*";
+    let filterBySelectedHostname = !displayAllHostnames && !filterByUrl && !filterByValue;
+    let filterValue = document.getElementById("custom-hostname-value").value;
 
     document.querySelectorAll(".value").forEach(cell => {
         let row = cell.parentNode;
-        let isCellEmpty = cell.innerHTML.trim().length == 0;
         let url = row.getElementsByClassName("url-cell")[0].title;
-        let parsedUrl = URL.parse(url)?.host;
-        let urlCanBeShown = selectedHostname == "*" || parsedUrl == selectedHostname;
-
-        if (!urlCanBeShown)
+        let value = cell.innerHTML.trim();
+        let isCellEmpty = value.length == 0;
+        let rowCanBeDisplayed = !isCellEmpty || isCellEmpty && !hideUrlsWithoutExtractedValues;
+        
+        if (filterByUrl)
+            rowCanBeDisplayed = url.includes(filterValue);
+        else if (filterByValue)
+            rowCanBeDisplayed = value.includes(filterValue);
+        else if (filterBySelectedHostname)
         {
-            row.classList.add("hidden");
-            return;
+            let hostname = URL.parse(url)?.host;
+            rowCanBeDisplayed = hostname == selectedFilter;
         }
-
-        if (hideUrlsWithoutExtractedValues)
-        {
-            if (isCellEmpty)
-                row.classList.add("hidden");
-            else
-                row.classList.remove("hidden");
-        }
-        else
+        
+        if (rowCanBeDisplayed)
             row.classList.remove("hidden");
+        else
+            row.classList.add("hidden");
     });
 }
 
