@@ -14,6 +14,7 @@ function applyExtractor(select, tableId) {
     if (clearValuesColumn)
     {
         document.querySelectorAll(`#${tableId} .value`).forEach((cell, index) => {cell.textContent = '';});
+        applyURLsFilters();
         return;
     }
     
@@ -176,12 +177,12 @@ function applyURLsFilters()
     let filterByUrl = selectedFilter == "*custom_url*";
     let filterByValue = selectedFilter == "*custom_value*";
     let filterBySelectedHostname = !displayAllHostnames && !filterByUrl && !filterByValue;
-    let filterValue = document.getElementById("custom-hostname-value").value;
+    let filterValue = document.getElementById("custom-hostname-value").value.toLowerCase();
 
     document.querySelectorAll(".value").forEach(cell => {
         let row = cell.parentNode;
-        let url = row.getElementsByClassName("url-cell")[0].title;
-        let value = cell.innerHTML.trim();
+        let url = row.getElementsByClassName("url-cell")[0].title.toLowerCase();
+        let value = cell.innerHTML.trim().toLowerCase();
         let isCellEmpty = value.length == 0;
         let rowCanBeDisplayed = displayAllHostnames;
         
