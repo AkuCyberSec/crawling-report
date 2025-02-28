@@ -1,16 +1,20 @@
 max_rows_per_report: 500
 hide_rows_automatically: true
 rules:
+  - name: "Potential Vulnerabilities"
+    enabled: true
+    matchers:
+      - "[&|\\?](doc|pdf|pdfDoc|document|file|path|download|image|img|file_path|filePath|docPath|upload|uploadPath)=([^&]+)"
+    extractors:
+      - name: "SSRF / Path Traversal"
+        group: 1
+        expression: "[&|\\?]((doc|pdf|pdfDoc|document|file|path|download|image|img|file_path|filePath|docPath|upload|uploadPath)=([^&]+))"
   - name: "Credentials"
     enabled: true
     matchers:
-      # Users and passwords
       - "[\\?|&](passw|pwd|password|passwd|username|user|usr|login|loginid)=[^&]"
-      # Emails
       - "[\\?|&](email|mail)=([^&]+[@|%40]{1}[^&]+\\.[^&]+)"
-      # JWTs
       - "[\\?|&](jwt|apiKey|api|key|token|access_token|refresh_token)=(eyJhbGciOiJ){1}[a-z0-9\\-_\\+/=%]+\\.(eyJ){1}[a-z0-9\\-_\\+/=%]+\\.[a-z0-9\\-_\\+/=%]+"
-      # Sessions
       - "[\\?|&](phpsessid|jsessionid|asp\\.net_sessionid|_session_id|sessionid|connect\\.sid|laravel_session|cfid)=[^&]+"
     extractors:
       - name: "Password"

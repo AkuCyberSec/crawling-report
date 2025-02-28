@@ -127,6 +127,10 @@ class Rule:
 
         return "\n".join(extractors)
 
+    def get_rule_name_for_HTML_panel(self):
+        return self.name \
+                .replace(" ", "_")
+        
 class CrawlingReport:
 
     # YAML Keys
@@ -211,7 +215,7 @@ class CrawlingReport:
             if len(rule.rows) == 0:
                 logger.info(f"Skipping rule {rule.name} because it contains no rows")
                 continue
-            
+
             logger.info(f"Exporting rows for rule {rule.name}")
             logger.debug(f"Number of rows for rule: {len(rule.rows)}")
 
@@ -233,7 +237,7 @@ class CrawlingReport:
                     # Create the report because the max num. of rows has been reached
                     logger.debug(f"Report #{report_counter}: Close the panel and create the report. Max num rows per report ({self.max_rows_per_report}) has been reached. Row counter: {report_row_counter}")
                     panels.append(panel_template \
-                        .replace("@@RULE_NAME", rule.name) \
+                        .replace("@@RULE_NAME", rule.get_rule_name_for_HTML_panel()) \
                         .replace("@@EXTRACTORS", extractors) \
                         .replace("@@ROWS", "\n".join(rows)))
                     self.__save_report(output_directory, panels, \
@@ -251,7 +255,7 @@ class CrawlingReport:
             if report_row_counter > 0:
                 logger.debug(f"Report #{report_counter}: Close the panel because there are rows left for the panel. Row counter: {report_row_counter}")
                 panels.append(panel_template \
-                    .replace("@@RULE_NAME", rule.name) \
+                    .replace("@@RULE_NAME", rule.get_rule_name_for_HTML_panel()) \
                     .replace("@@EXTRACTORS", extractors) \
                     .replace("@@ROWS", "\n".join(rows)))
                 rows = []
